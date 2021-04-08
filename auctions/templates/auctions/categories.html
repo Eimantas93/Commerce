@@ -1,0 +1,45 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+ 
+ <div class="container">
+    <div class="form-group">
+        <form method="POST">
+        {% csrf_token %}
+        <select class="form-control" name="category" placeholder="Category" required>
+            <option value="#">Choose a Category</option>
+            {% for listing in grouped_listings%}
+            <option name="category" value="{{listing.category}}">{{listing.category}}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-primary mt-2 w-100" type="submit">Filter</button>
+        </form>
+    </div> 
+</div>
+
+
+<div class="container mt-5">
+
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Image</th>
+            <th scope="col">Description</th>
+            <th scope="col">Link</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings %}
+            <tr>
+            <td>{{listing.title}}</td></a>
+            <td><img src="{{listing.image_link}}" width="100"></td>
+            <td>{{listing.description}}</td>
+            <td><a class="btn btn-primary" href="{% url 'listing' listing.id %}">Visit listing</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+</div>
+
+{% endblock %}

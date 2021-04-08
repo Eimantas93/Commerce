@@ -1,0 +1,73 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<div class="container row">
+    <div class="col-md">
+    <img src="{{listing.image_link}}" alt="" width="100%">
+    </div>
+    <div class="col-md">
+        {% if listing.is_active %}
+        <h2><b>{{listing.title}}</b></h2>
+        <p>{{listing.description}}</p>
+        <br>
+        {% if highest_bid %}
+        <p>Current bid: <b>{{highest_bid}} EUR</b></p> 
+        {% else %}
+        <p>Starting bid: <b>{{listing.start_bid}} EUR</b></p> 
+        {% endif %}
+        <br>
+        <h3>Place a bid:</h3>
+        <form method="POST">
+            {% csrf_token %}            
+            <input type="text" name="bid">
+            <button class="btn btn-primary" type="submit">Bid</button>
+        </form>
+        <br>
+        <br>
+        <br>
+        <p>Listing created: {{listing.creation_date}}</p>
+        <p>Auction duration: {{listing.duration_days}} days</p>
+        {% if logged_in %}
+        {% if added_to_watchlist %}
+        <a href="{% url 'watch' listing.id %}" class="btn btn-primary">Remove from watch list</a>
+        {% else %}
+        <a href="{% url 'watch' listing.id %}" class="btn btn-primary">Add to watch list</a>
+        {% endif %}
+        {% endif %}
+
+        {% if is_creator %}
+        <a href="{% url 'close' listing.id %}" class="btn btn-danger">End auction</a>
+        {% endif %}
+        {% elif user_id == winner_id %}
+        <h1>You have won the auction!</h1>
+        {% else %}
+        <h1>THIS AUCTION HAS ENDED</h1> 
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="container m-3">
+    <h3><b>Comments:</b></h3>
+    {% for user_comment in users_comments %}
+    <div class="row align-middle m-3">
+        <p>{{user_comment.creation_date}}<b> {{user_comment.username}}:</b> {{user_comment.comment}}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="container m-3">
+    <form action="{% url 'comment' listing.id %}" method="POST">
+        {% csrf_token %}            
+        <div class="row">
+        <h4>Add comment:</h4>
+        <div class="form-group w-100">
+            <textarea class="form-control" name="comment" rows="4" placeholder="Description"></textarea>
+        </div>   
+        <button class="btn btn-primary" type="submit">Comment</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
